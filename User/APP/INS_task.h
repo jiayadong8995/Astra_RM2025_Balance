@@ -49,13 +49,13 @@ typedef struct
     float Pitch;
     float Yaw;
     float YawTotalAngle;
-		float YawAngleLast;
-		float YawRoundCount;
-		
-		float v_n;//绝对系沿着水平运动方向的速度
-		float x_n;//绝对系沿着水平运动方向的位移
-		
-		uint8_t ins_flag;
+	float YawAngleLast;
+	float YawRoundCount;
+	
+	float v_n;//绝对系沿着水平运动方向的速度
+	float x_n;//绝对系沿着水平运动方向的位移
+	
+	uint8_t ins_flag;
 } INS_t;
 
 

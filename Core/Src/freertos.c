@@ -26,10 +26,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "INS_task.h"
-#include "chassisR_task.h"
-#include "chassisL_task.h"
+#include "chassis_task.h"
+#include "motor_control_task.h"
 #include "observe_task.h"
-#include "ps2_task.h"
+#include "remote_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,26 +49,28 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
-/* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId INS_TASKHandle;
-osThreadId CHASSISR_TASKHandle;
-osThreadId CHASSISL_TASKHandle;
+osThreadId CHASSIS_TASKHandle;
+osThreadId MOTOR_CONTROL_TASKHandle;
 osThreadId OBSERVE_TASKHandle;
-osThreadId PS2_TASKHandle;
+osThreadId REMOTE_TASKHandle;
+/* USER CODE END Variables */
+osThreadId defaultTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
+void StartDefaultTask(void const * argument);
+void INS_Task(void const * argument);
+void Chassis_Task(void const * argument);
+void Motor_Control_Task(void const * argument);
+void OBSERVE_Task(void const * argument);
+void Remote_Task(void const * argument);
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
-void INS_Task(void const * argument);
-void ChassisR_Task(void const * argument);
-void ChassisL_Task(void const * argument);
-void OBSERVE_Task(void const * argument);
-void PS2_Task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -103,28 +105,27 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
   /* definition and creation of INS_TASK */
   osThreadDef(INS_TASK, INS_Task, osPriorityRealtime, 0, 512);
   INS_TASKHandle = osThreadCreate(osThread(INS_TASK), NULL);
 
   /* definition and creation of CHASSISR_TASK */
-  osThreadDef(CHASSISR_TASK, ChassisR_Task, osPriorityAboveNormal, 0, 512);
-  CHASSISR_TASKHandle = osThreadCreate(osThread(CHASSISR_TASK), NULL);
+  osThreadDef(CHASSISR_TASK, Chassis_Task, osPriorityAboveNormal, 0, 512);
+  CHASSIS_TASKHandle = osThreadCreate(osThread(CHASSISR_TASK), NULL);
 
   /* definition and creation of CHASSISL_TASK */
-	 osThreadDef(CHASSISL_TASK, ChassisL_Task, osPriorityAboveNormal, 0, 512);
-	 CHASSISL_TASKHandle = osThreadCreate(osThread(CHASSISL_TASK), NULL);
+  osThreadDef(CHASSISL_TASK, Motor_Control_Task, osPriorityAboveNormal, 0, 512);
+  MOTOR_CONTROL_TASKHandle = osThreadCreate(osThread(CHASSISL_TASK), NULL);
 
   /* definition and creation of OBSERVE_TASK */
   osThreadDef(OBSERVE_TASK, OBSERVE_Task, osPriorityHigh, 0, 512);
   OBSERVE_TASKHandle = osThreadCreate(osThread(OBSERVE_TASK), NULL);
 
   /* definition and creation of PS2_TASK */
-  osThreadDef(PS2_TASK, PS2_Task, osPriorityAboveNormal, 0, 128);
-  PS2_TASKHandle = osThreadCreate(osThread(PS2_TASK), NULL);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  osThreadDef(REMOTE_TASK, Remote_Task, osPriorityAboveNormal, 0, 512);
+  REMOTE_TASKHandle = osThreadCreate(osThread(REMOTE_TASK), NULL);  
   /* USER CODE END RTOS_THREADS */
 
 }
@@ -147,6 +148,8 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
+/* Private application code --------------------------------------------------*/
+/* USER CODE BEGIN Application */
 /* USER CODE BEGIN Header_INS_Task */
 /**
 * @brief Function implementing the ins_task thread.
@@ -173,13 +176,13 @@ void INS_Task(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_ChassisR_Task */
-void ChassisR_Task(void const * argument)
+void Chassis_Task(void const * argument)
 {
   /* USER CODE BEGIN ChassisR_Task */
   /* Infinite loop */
   for(;;)
   {
-    ChassisR_task();
+    Chassis_task();
   }
   /* USER CODE END ChassisR_Task */
 }
@@ -191,13 +194,13 @@ void ChassisR_Task(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_ChassisL_Task */
-void ChassisL_Task(void const * argument)
+void Motor_Control_Task(void const * argument)
 {
   /* USER CODE BEGIN ChassisL_Task */
   /* Infinite loop */
   for(;;)
   {
-    ChassisL_task();
+    motor_control_task();
   }
   /* USER CODE END ChassisL_Task */
 }
@@ -227,18 +230,15 @@ void OBSERVE_Task(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_PS2_Task */
-void PS2_Task(void const * argument)
+void Remote_Task(void const * argument)
 {
   /* USER CODE BEGIN PS2_Task */
   /* Infinite loop */
   for(;;)
   {
-    pstwo_task();
+    remote_task();
   }
   /* USER CODE END PS2_Task */
 }
-
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
 
 /* USER CODE END Application */

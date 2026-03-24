@@ -58,19 +58,19 @@ void INS_task(void)
     INS.Gyro[Y] = BMI088.Gyro[Y];
     INS.Gyro[Z] = BMI088.Gyro[Z];
   	Gyro.x=BMI088.Gyro[0];
-		Gyro.y=BMI088.Gyro[1];
-		Gyro.z=BMI088.Gyro[2];
+	Gyro.y=BMI088.Gyro[1];
+	Gyro.z=BMI088.Gyro[2];
 
-		mahony_input(&mahony,Gyro,Accel);
-		mahony_update(&mahony);
-		mahony_output(&mahony);
-	  RotationMatrix_update(&mahony);
+	mahony_input(&mahony,Gyro,Accel);
+	mahony_update(&mahony);
+	mahony_output(&mahony);
+	RotationMatrix_update(&mahony);
 				
-		INS.q[0]=mahony.q0;
-		INS.q[1]=mahony.q1;
-		INS.q[2]=mahony.q2;
-		INS.q[3]=mahony.q3;
-       
+	INS.q[0]=mahony.q0;
+	INS.q[1]=mahony.q1;
+	INS.q[2]=mahony.q2;
+	INS.q[3]=mahony.q3;
+
       // 将重力从导航坐标系n转换到机体系b,随后根据加速度计数据计算运动加速度
 	float gravity_b[3];
     EarthFrameToBodyFrame(gravity, gravity_b, INS.q);
@@ -80,50 +80,50 @@ void INS_task(void)
 														+ INS.MotionAccel_b[i] * INS.AccelLPF / (INS.AccelLPF + ins_dt); 
 //			INS.MotionAccel_b[i] = (INS.Accel[i] ) * dt / (INS.AccelLPF + dt) 
 //														+ INS.MotionAccel_b[i] * INS.AccelLPF / (INS.AccelLPF + dt);			
-		}
-		BodyFrameToEarthFrame(INS.MotionAccel_b, INS.MotionAccel_n, INS.q); // 转换回导航系n
+	}
+	BodyFrameToEarthFrame(INS.MotionAccel_b, INS.MotionAccel_n, INS.q); // 转换回导航系n
+	
+	//死区处理
+	if(fabsf(INS.MotionAccel_n[0])<0.02f)
+	{
+	  INS.MotionAccel_n[0]=0.0f;	//x轴
+	}
+	if(fabsf(INS.MotionAccel_n[1])<0.02f)
+	{
+	  INS.MotionAccel_n[1]=0.0f;	//y轴
+	}
+	if(fabsf(INS.MotionAccel_n[2])<0.04f)
+	{
+	  INS.MotionAccel_n[2]=0.0f;//z轴
+	}
+	
+	if(ins_time>3000.0f)
+	{
+		INS.ins_flag=1;//四元数基本收敛，加速度也基本收敛，可以开始底盘任务
+		// 获取最终数据
+		INS.Pitch= mahony.roll - PITCH_OFFSET;  //安装存在误差，减去初始角度
+		INS.Roll= mahony.pitch - ROLL_OFFSET;
+		INS.Yaw=mahony.yaw;
+
+//INS.YawTotalAngle=INS.YawTotalAngle+INS.Gyro[2]*0.001f;
 		
-		//死区处理
-		if(fabsf(INS.MotionAccel_n[0])<0.02f)
+		if (INS.Yaw - INS.YawAngleLast > 3.1415926f)
 		{
-		  INS.MotionAccel_n[0]=0.0f;	//x轴
+			INS.YawRoundCount--;
 		}
-		if(fabsf(INS.MotionAccel_n[1])<0.02f)
+		else if (INS.Yaw - INS.YawAngleLast < -3.1415926f)
 		{
-		  INS.MotionAccel_n[1]=0.0f;	//y轴
+			INS.YawRoundCount++;
 		}
-		if(fabsf(INS.MotionAccel_n[2])<0.04f)
-		{
-		  INS.MotionAccel_n[2]=0.0f;//z轴
-		}
-   		
-		if(ins_time>3000.0f)
-		{
-		  INS.ins_flag=1;//四元数基本收敛，加速度也基本收敛，可以开始底盘任务
-			// 获取最终数据
-          INS.Pitch= mahony.roll - PITCH_OFFSET;  //安装存在误差，减去初始角度
-		  INS.Roll= mahony.pitch - ROLL_OFFSET;
-		  INS.Yaw=mahony.yaw;
-		
-		//INS.YawTotalAngle=INS.YawTotalAngle+INS.Gyro[2]*0.001f;
-			
-			if (INS.Yaw - INS.YawAngleLast > 3.1415926f)
-			{
-					INS.YawRoundCount--;
-			}
-			else if (INS.Yaw - INS.YawAngleLast < -3.1415926f)
-			{
-					INS.YawRoundCount++;
-			}
 			INS.YawTotalAngle = 6.283f* INS.YawRoundCount + INS.Yaw;
 			INS.YawAngleLast = INS.Yaw;
 		}
 		else
 		{
-		 ins_time++;
+			ins_time++;
 		}
 		
-    osDelay(1);
+		osDelay(1);
 	}
 } 
 

@@ -390,3 +390,18 @@ float Get_OLS_Smooth(Ordinary_Least_Squares_t *OLS)
 {
     return OLS->k * OLS->x[OLS->Order - 1] + OLS->b;
 }
+
+/**
+  * @brief          限幅函数
+  */
+void mySaturate(float *in,float min,float max)
+{
+  if(*in < min)
+  {
+    *in = min;
+  }
+  else if(*in > max)
+  {
+    *in = max;
+  }
+}

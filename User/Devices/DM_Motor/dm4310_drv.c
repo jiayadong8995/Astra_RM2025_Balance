@@ -121,23 +121,6 @@ void dm4310_fbdata(Joint_Motor_t *motor, uint8_t *rx_data,uint32_t data_len)
 }
 
 
-// void dm6215_fbdata(Wheel_Motor_t *motor, uint8_t *rx_data,uint32_t data_len)
-// { 
-// 	if(data_len==FDCAN_DLC_BYTES_8)
-// 	{//返回的数据有8个字节
-// 	  motor->para.id = (rx_data[0])&0x0F;
-// 	  motor->para.state = (rx_data[0])>>4;
-// 	  motor->para.p_int=(rx_data[1]<<8)|rx_data[2];
-// 	  motor->para.v_int=(rx_data[3]<<4)|(rx_data[4]>>4);
-// 	  motor->para.t_int=((rx_data[4]&0xF)<<8)|rx_data[5];
-// 	  motor->para.pos = uint_to_float(motor->para.p_int, P_MIN2, P_MAX2, 16); // (-12.0,12.0)
-// 	  motor->para.vel = uint_to_float(motor->para.v_int, V_MIN2, V_MAX2, 12); // (-30.0,30.0)
-// 	  motor->para.tor = uint_to_float(motor->para.t_int, T_MIN2, T_MAX2, 12);  // (-18.0,18.0)
-// 	  motor->para.Tmos = (float)(rx_data[6]);
-// 	  motor->para.Tcoil = (float)(rx_data[7]);
-// 	}
-// }
-
 
 int enable_motor_mode(hcan_t* hcan, uint16_t motor_id, uint16_t mode_id)
 {
@@ -308,30 +291,26 @@ void mit_ctrl2(hcan_t* hcan, uint16_t motor_id, float pos, float vel,float kp, f
 // high is forward 
 void CAN_cmd_chassis(hcan_t *hcan,int16_t motor1,int16_t motor2,int16_t rev1,int16_t rev2)
 {
-	uint8_t data[8];
+	uint8_t data[8]={0};
 	uint16_t Motor_All_Id = 0x200;
 	data[0] = (motor1 >> 8) & 0xFF; //high
 	data[1] = motor1 & 0xFF;        //low
 	data[2] = (motor2 >> 8) & 0xFF; // 提取高8位
 	data[3] =  motor2 & 0xFF;       // 提取低8位
-	data[4] = (rev1 >> 8) & 0xFF;   // 提取高8位
-    data[5] = rev1 & 0xFF;          // 提取低8位
-    data[6] = (rev2 >> 8) & 0xFF;   // 提取高8位
-    data[7] = rev2 & 0xFF;          // 提取低8位
 
 	canx_send_data(hcan,Motor_All_Id,data,8);
 }
 
 //3508电机解包
 void get_motor_measure(chassis_motor_measure_t *ptr, uint8_t *data, uint32_t data_len)                                    
-    {                                                                   
-        (ptr)->last_ecd = (ptr)->ecd;                                   
-        (ptr)->ecd = (uint16_t)((data)[0] << 8 | (data)[1]);            
-        (ptr)->speed_rpm = (uint16_t)((data)[2] << 8 | (data)[3]);      
-        (ptr)->given_current = (uint16_t)((data)[4] << 8 | (data)[5]);  
-        (ptr)->temperate = (data)[6];        
-         get_total_angle(ptr);	
-    }
+{                                                                   
+	(ptr)->last_ecd = (ptr)->ecd;                                   
+	(ptr)->ecd = (uint16_t)((data)[0] << 8 | (data)[1]);            
+	(ptr)->speed_rpm = (uint16_t)((data)[2] << 8 | (data)[3]);      
+	(ptr)->given_current = (uint16_t)((data)[4] << 8 | (data)[5]);  
+	(ptr)->temperate = (data)[6];        
+	 get_total_angle(ptr);	
+}
     
 		/**
   * @brief          return the chassis 3508 motor data point
@@ -352,8 +331,22 @@ float motor_speed_to_angle(MotorData *motors,float *speed){
   int32_t now = HAL_GetTick();
   motors->speed = *speed;
   motors->filtered_speed = motors->filtered_speed*(1-FILTER_COEFFICIENT)+motors->speed * FILTER_COEFFICIENT;
-float delta_time = (now - motors->last_time)/1000.0f;
+  float delta_time = (now - motors->last_time)/1000.0f;
   motors->angle +=motors->filtered_speed*delta_time;
   motors->last_time = now;
   return motors->angle;
+}
+//设置零点函数
+void DM_motor_zeroset(hcan_t* hcan , uint16_t motor_id)
+{
+  uint8_t data[8];
+  data[0] = 0xFF;
+	data[1] = 0xFF;
+	data[2] = 0xFF;
+	data[3] = 0xFF;
+	data[4] = 0xFF;
+	data[5] = 0xFF;
+	data[6] = 0xFF;
+	data[7] = 0xFE;
+	canx_send_data(hcan , motor_id , data, 8);
 }

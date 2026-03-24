@@ -22,7 +22,7 @@
 
 #include "main.h"
 
-#include "uartall.h"
+#include "bsp_uart.h"
 #include "string.h"
 
 
@@ -165,16 +165,16 @@ static int16_t RC_abs(int16_t value)
     rc_ctrl->key.v = sbus_buf[14] | (sbus_buf[15] << 8);                    //!< KeyBoard value
     rc_ctrl->rc.ch[4] = sbus_buf[16] | (sbus_buf[17] << 8);                 //NULL
 		
-		//satori:防止数据零漂，设置正负5的死区
-  /* prevent remote control zero deviation */
-  if(rc_ctrl->rc.ch[0]  <= 5 && rc_ctrl->rc.ch[0]  >= -5)
-     rc_ctrl->rc.ch[0]  = 0;
-  if(rc_ctrl->rc.ch[1] <= 5 && rc_ctrl->rc.ch[1] >= -5)
-     rc_ctrl->rc.ch[1] = 0;
-  if(rc_ctrl->rc.ch[2] <= 5 && rc_ctrl->rc.ch[2] >= -5)
-     rc_ctrl->rc.ch[2] = 0;
-  if(rc_ctrl->rc.ch[2] <= 5 && rc_ctrl->rc.ch[2] >= -5)
-     rc_ctrl->rc.ch[2] = 0;
+	//satori:防止数据零漂，设置正负5的死区
+	/* prevent remote control zero deviation */
+	if(rc_ctrl->rc.ch[0]  <= 5 && rc_ctrl->rc.ch[0]  >= -5)
+		rc_ctrl->rc.ch[0]  = 0;
+	if(rc_ctrl->rc.ch[1] <= 5 && rc_ctrl->rc.ch[1] >= -5)
+		rc_ctrl->rc.ch[1] = 0;
+	if(rc_ctrl->rc.ch[2] <= 5 && rc_ctrl->rc.ch[2] >= -5)
+		rc_ctrl->rc.ch[2] = 0;
+	if(rc_ctrl->rc.ch[2] <= 5 && rc_ctrl->rc.ch[2] >= -5)
+		rc_ctrl->rc.ch[2] = 0;
 	
     rc_ctrl->rc.ch[0] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[1] -= RC_CH_VALUE_OFFSET;
@@ -182,7 +182,7 @@ static int16_t RC_abs(int16_t value)
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 	
-	  //satori:防止数据溢出
-	  RC_data_is_error();
+	//satori:防止数据溢出
+	RC_data_is_error();
 }
 

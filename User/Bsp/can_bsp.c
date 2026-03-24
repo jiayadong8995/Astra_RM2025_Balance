@@ -2,7 +2,7 @@
 #include "fdcan.h"
 #include "dm4310_drv.h"
 #include "string.h"
-#include "chassisR_task.h"
+#include "chassis_task.h"
 
 FDCAN_RxHeaderTypeDef RxHeader1;
 uint8_t g_Can1RxData[64];
@@ -15,7 +15,7 @@ void FDCAN1_Config(void)
 {
   FDCAN_FilterTypeDef sFilterConfig;
   /* Configure Rx filter */	
-	sFilterConfig.IdType = FDCAN_STANDARD_ID;//扩展ID不接收
+  sFilterConfig.IdType = FDCAN_STANDARD_ID;//扩展ID不接收
   sFilterConfig.FilterIndex = 0;
   sFilterConfig.FilterType = FDCAN_FILTER_MASK;
   sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
@@ -120,7 +120,7 @@ uint8_t canx_send_data(FDCAN_HandleTypeDef *hcan, uint16_t id, uint8_t *data, ui
 		 TxHeader.DataLength =FDCAN_DLC_BYTES_64;
 	 }
 											
-	TxHeader.ErrorStateIndicator =  FDCAN_ESI_ACTIVE;
+  TxHeader.ErrorStateIndicator =  FDCAN_ESI_ACTIVE;
   TxHeader.BitRateSwitch = FDCAN_BRS_OFF;//比特率切换关闭，不适用于经典CAN
   TxHeader.FDFormat =  FDCAN_CLASSIC_CAN;            // CANFD
   TxHeader.TxEventFifoControl =  FDCAN_NO_TX_EVENTS;  
@@ -130,7 +130,7 @@ uint8_t canx_send_data(FDCAN_HandleTypeDef *hcan, uint16_t id, uint8_t *data, ui
   if(HAL_FDCAN_AddMessageToTxFifoQ(hcan, &TxHeader, data) != HAL_OK)
   {
         // 发送失败处理
-       Error_Handler();   
+//       Error_Handler();   
        return	1;	
   }
 	else{

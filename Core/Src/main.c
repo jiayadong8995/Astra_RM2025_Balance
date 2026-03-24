@@ -35,7 +35,7 @@
 #include "bsp_dwt.h"
 #include "BMI088Middleware.h"
 #include "can_bsp.h"
-#include "uartall.h"
+#include "bsp_uart.h"
 #include "remote_control.h"
 /* USER CODE END Includes */
 
@@ -87,7 +87,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   HAL_Init();
 
   /* USER CODE BEGIN Init */
 //06 01 00 00 00 00 00 00 00 00 00 00 00 00 80 3F
@@ -112,6 +112,7 @@ int main(void)
   MX_TIM3_Init();
   MX_FDCAN3_Init();
   MX_UART5_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	DWT_Init(480);
 	
@@ -289,4 +290,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
- 

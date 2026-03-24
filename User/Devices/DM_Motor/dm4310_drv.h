@@ -128,7 +128,7 @@ extern void get_motor_measure(chassis_motor_measure_t *ptr, uint8_t *data, uint3
 extern void get_total_angle(chassis_motor_measure_t *p);
 extern const chassis_motor_measure_t *get_chassis_motor_measure_point(uint8_t i);
 extern float motor_speed_to_angle(MotorData *motors,float *speed);
-
+void DM_motor_zeroset(hcan_t* hcan , uint16_t motor_id);
 
 #endif /* __DM4310_DRV_H__ */
 
