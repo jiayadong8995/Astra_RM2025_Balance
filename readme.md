@@ -1,33 +1,35 @@
-# 项目说明
+# Astra RM2025 Balance Chassis
 
-本项目基于达妙开源的轮腿机器人项目进行二次开发。
+Wheel-legged balance robot chassis firmware based on STM32H723VGT, developed for RoboMaster 2025.
 
-达妙开源轮足地址：https://gitee.com/kit-miao/wheel-legged
+Secondary development based on [DaMiao open-source wheel-legged robot](https://gitee.com/kit-miao/wheel-legged).
 
-## 预开发功能：
+## Hardware
 
-1. 将达妙驱动轮电机换为大疆M3508。添加电机发送线程。（已完成）
-2. 调整参数，将达妙版本的轮腿机器人参数替换为项目机器人参数。保证机器人正常运动。*注：机器人参数在上个版本已经计算过*
-3. 添加轮腿机器人跳跃功能，完成该功能后应该需要进行调参，尝试开发上台阶功能。*注：完成功能3轮腿机器人达到拍摄完整形态视频要求*
-4. 完成达妙开发板和大疆c板之间的can通信。
-5. TBD
+- MCU: STM32H723VGT
+- IMU: BMI088
+- Motors: DM4310 (leg joints) + DJI M3508 (drive wheels)
+- Communication: FDCAN, UART (DBUS remote control)
 
-## 已开发功能：
+## Software Architecture
 
-1. 轮腿离地检测，轮腿可以顺利下台阶
+FreeRTOS tasks:
 
-## 轮腿跳跃功能思路：
+| Task | Priority | Description |
+|------|----------|-------------|
+| INS_Task | Realtime | IMU attitude estimation (Mahony filter + Kalman) |
+| Chassis_Task | AboveNormal | VMC leg kinematics and LQR balance control |
+| Motor_Control_Task | AboveNormal | DM4310 & M3508 motor CAN communication |
+| Observe_Task | High | Velocity/state estimation (Kalman filter) |
+| Remote_Task | AboveNormal | Remote control input parsing and robot state machine |
 
-通过遥控器状态机获取轮腿跳跃状态
+## Key Algorithms
 
-状态一：
+- **VMC** (Virtual Model Control): 5-bar linkage forward/inverse kinematics
+- **LQR**: Linear-quadratic regulator for balance and velocity control
+- **Kalman Filter**: Velocity and state estimation
+- **Mahony Filter**: IMU attitude fusion
 
-缩推状态。
+## Build
 
-状态二：
-
-腿部伸长（腿部支持力加大）。
-
-状态三：
-
-将腿部长度还原为初始长度。
+Keil MDK-ARM project located in `MDK-ARM/CtrlBoard-H7_IMU.uvprojx`.
