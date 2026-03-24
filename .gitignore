@@ -1,3 +1,6 @@
+# IDE / 编辑器
+.vscode/
+
 # Keil MDK 编译产物
 MDK-ARM/CtrlBoard-H7_IMU/*.o
 MDK-ARM/CtrlBoard-H7_IMU/*.d
