@@ -1,0 +1,38 @@
+# Keil MDK 编译产物
+MDK-ARM/CtrlBoard-H7_IMU/*.o
+MDK-ARM/CtrlBoard-H7_IMU/*.d
+MDK-ARM/CtrlBoard-H7_IMU/*.crf
+MDK-ARM/CtrlBoard-H7_IMU/*.axf
+MDK-ARM/CtrlBoard-H7_IMU/*.hex
+MDK-ARM/CtrlBoard-H7_IMU/*.htm
+MDK-ARM/CtrlBoard-H7_IMU/*.map
+MDK-ARM/CtrlBoard-H7_IMU/*.lnp
+MDK-ARM/CtrlBoard-H7_IMU/*.dep
+MDK-ARM/CtrlBoard-H7_IMU/*.lst
+MDK-ARM/CtrlBoard-H7_IMU/*.sct
+MDK-ARM/CtrlBoard-H7_IMU/*.build_log.htm
+
+# Keil 用户界面布局（每个人不同）
+MDK-ARM/*.uvguix.*
+
+# Keil 调试配置
+MDK-ARM/CtrlBoard-H7_IMU/*.ini
+MDK-ARM/JLinkLog.txt
+MDK-ARM/JLinkSettings.ini
+MDK-ARM/DebugConfig/
+
+# startup 编译产物
+MDK-ARM/*.lst
+
+# EIDE
+MDK-ARM/.eide/log
+MDK-ARM/.eide.usr.ctx.json
+MDK-ARM/build/
+MDK-ARM/bin/
+MDK-ARM/obj/
+MDK-ARM/out/
+*.ept
+*.eide-template
+
+# drawio 备份
+.$*.drawio.bkp
